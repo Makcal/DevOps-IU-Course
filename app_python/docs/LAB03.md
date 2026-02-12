@@ -59,3 +59,16 @@ My workflow consists of two jobs: one to test and one, dependent, to build a doc
 ![Screenshot](./screenshots/04-ci-passed.png)
 
 ---
+
+## 3. CI best practices & security
+
+1. Test passing badge (look at [README.md](../README.md))
+
+2. Dependencies caching: due to the small number of dependencies the timing do not differ much. You can view it [here](https://github.com/Makcal/DevOps-IU-Course/actions/runs/21961605902) (compare between attempts).
+
+3. Best practices:
+    - Fail fast: improves the workflow speed.
+    - Job dependencies: do not build a Docker image if tests or security check fail.
+    - Conditional steps: Docker image is built and pushed only in branch `lab03` to reduce occasional releases.
+
+4. Snyk CVE scan: Snyk scans `requirements.txt` for vulnerabilities. All levels matter and build fails if find any. No such was found in CI.
