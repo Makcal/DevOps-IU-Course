@@ -11,6 +11,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.14'
+      - run: cd app_python
       - name: Install deps
         run: pip install -r requirements.txt -r requirements-dev.txt
       - name: Linting
@@ -36,6 +37,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          context: app_python
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ui-devops-python-app:0.1.0
