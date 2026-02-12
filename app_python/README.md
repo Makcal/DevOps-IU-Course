@@ -1,3 +1,5 @@
+[![Python tests](https://github.com/Makcal/DevOps-IU-Course/actions/workflows/python-ci.yml/badge.svg)](https://github.com/Makcal/DevOps-IU-Course/actions/workflows/python-ci.yml)
+
 # DevOps Info Service
 
 A lightweight web service that exposes information about itself and the system it is running on.

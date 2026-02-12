@@ -54,8 +54,8 @@ My workflow consists of two jobs: one to test and one, dependent, to build a doc
 
 ### Evidence of correctness
 
-[Link]()
+[Link](https://github.com/Makcal/DevOps-IU-Course/actions/runs/21948389022)
 
-![Screenshot]()
+![Screenshot](./screenshots/04-ci-passed.png)
 
 ---
