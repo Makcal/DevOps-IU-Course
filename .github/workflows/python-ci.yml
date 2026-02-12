@@ -32,11 +32,19 @@ jobs:
     environment: Snyk
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+          cache-dependency-path: |
+            app_python/requirements.txt
+            app_python/requirements-dev.txt
+      - name: Install deps
+        run: pip install -r requirements.txt -r requirements-dev.txt
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        working-directory: .
 
   docker:  
     name: Build & Push Docker Image
