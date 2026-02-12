@@ -36,8 +36,6 @@ jobs:
         uses: snyk/actions/python@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run:
-          working-directory: .
 
   docker:  
     name: Build & Push Docker Image
