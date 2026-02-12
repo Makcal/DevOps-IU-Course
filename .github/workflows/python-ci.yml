@@ -2,6 +2,10 @@ name: Python tests
 
 on: [push, pull_request]
 
+defaults:
+  run:
+    working-directory: ./app_python
+
 jobs:
   test:
     name: Linting, Testing, Security scan
@@ -19,17 +23,21 @@ jobs:
             app_python/requirements.txt
             app_python/requirements-dev.txt
       - name: Install deps
-        run: pip install -r app_python/requirements.txt -r app_python/requirements-dev.txt
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
       - name: Linting
         run: flake8 --radon-max-cc=10 src main.py
-        working-directory: ./app_python
+
       - name: Testing
         run: pytest -v --cov=main --cov=src --cov-fail-under=85
-        working-directory: ./app_python
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/python@master
+
+      - uses: actions/setup-node@v6
         with:
-          args: --file=app_python/requirements.txt
+          node-version: 24
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+      - name: Run Snyk dependency scan
+        run: snyk test --file=requirements.txt
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
