@@ -37,6 +37,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: 
-            - ${{ secrets.DOCKERHUB_USERNAME }}/ui-devops-python-app:0.1.0
-            - ${{ secrets.DOCKERHUB_USERNAME }}/ui-devops-python-app:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ui-devops-python-app:0.1.0
+            ${{ secrets.DOCKERHUB_USERNAME }}/ui-devops-python-app:latest
