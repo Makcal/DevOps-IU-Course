@@ -41,7 +41,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: "{{defaultContext}}:app_python"
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/iu-devops-app_python:0.1.0
