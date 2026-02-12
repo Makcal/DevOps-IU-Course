@@ -66,13 +66,17 @@ def get_runtime_info() -> dict[str, Any]:
         "uptime_seconds": uptime["seconds"],
         "uptime_human": uptime["human"],
         "current_time": now.isoformat(),
-        "timezone": now.tzinfo.tzname(now) if now.tzinfo is not None else "Unknown",
+        "timezone": now.tzinfo.tzname(now)
+        if now.tzinfo is not None
+        else "Unknown",
     }
 
 
 def get_request_info(request: Request) -> dict[str, Any]:
     return {
-        "client_ip": request.client.host if request.client is not None else "Unknown",
+        "client_ip": request.client.host
+        if request.client is not None
+        else "Unknown",
         "user_agent": request.headers.get("User-Agent"),
         "method": request.method,
         "path": request.url.path,

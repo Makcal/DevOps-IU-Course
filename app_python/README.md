@@ -63,6 +63,15 @@ docker run -p 5000:5000 <dockerhub-username>/devops-info-service
 
 ---
 
+## Running tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest --cov=.
+```
+
+---
+
 ## API Endpoints
 
 - `GET /` – Service and system information

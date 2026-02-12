@@ -1,10 +1,15 @@
 __all__ = ["router"]
 
-
 from typing import Any
 from fastapi import Request, APIRouter
 
-from src.statistics import *
+from src.statistics import (
+    get_service_info,
+    get_system_info,
+    get_runtime_info,
+    get_request_info,
+    get_endpoints_info,
+)
 
 
 router = APIRouter()
