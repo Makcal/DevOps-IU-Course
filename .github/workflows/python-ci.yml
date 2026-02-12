@@ -30,7 +30,8 @@ jobs:
     name: Security scan
     runs-on: ubuntu-latest
     environment: Snyk
-    working-directory: .
+    run:
+      working-directory: .
     steps:
       - uses: actions/checkout@v6
       - name: Run Snyk to check for vulnerabilities
