@@ -10,10 +10,10 @@
 
 ### Tests description
 
-I chose `pytest` as it is most popular and easy to use. So, all tests can be run with a single word `pytest`. Use `--cov=.` to collect code coverage. An optional flag `-v` can be added to see tests' names.
+I chose `pytest` as it is most popular and easy to use. So, all tests can be run with a single word `pytest`. Use `--cov` to collect code coverage. An optional flag `-v` can be added to see tests' names.
 ```bash
 pip install -r requirements-dev.txt
-pytest --cov=.
+pytest --cov=src --cov=main --cov-fail-under=85
 ```
 
 As the task suggested, I provided two test: one for each endpoint validating the response structure. Although, it would be more intelligent to assign this task on strong type system (e.g. use Pydantic structures).

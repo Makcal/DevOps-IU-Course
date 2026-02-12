@@ -43,5 +43,5 @@ jobs:
           context: app_python
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ui-devops-python-app:0.1.0
-            ${{ secrets.DOCKERHUB_USERNAME }}/ui-devops-python-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/iu-devops-app_python:0.1.0
+            ${{ secrets.DOCKERHUB_USERNAME }}/iu-devops-app_python:latest
