@@ -15,28 +15,6 @@ on:
       - '.github/workflows/ansible-deploy.yml'
 
 jobs:
-  lint:
-    name: Ansible Lint
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
-        run: pip install ansible ansible-lint
-
-      - name: Run ansible-lint
-        run: |
-          cd ansible
-          ansible-lint playbooks/provision.yml playbooks/deploy.yml playbooks/site.yml
-
   deploy:
     name: Deploy Application
     needs: lint

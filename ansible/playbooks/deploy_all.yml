@@ -11,7 +11,7 @@
           include_vars: "../vars/app_python.yml"
           tags:
             - always
-          
+
         - name: Run web_app role
           include_role:
             name: web_app
@@ -24,7 +24,7 @@
           include_vars: "../vars/app_rust.yml"
           tags:
             - always
-          
+
         - name: Run web_app role
           include_role:
             name: web_app
