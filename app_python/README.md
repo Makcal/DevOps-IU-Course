@@ -1,3 +1,5 @@
+[![Python tests](https://github.com/Makcal/DevOps-IU-Course/actions/workflows/python-ci.yml/badge.svg)](https://github.com/Makcal/DevOps-IU-Course/actions/workflows/python-ci.yml)
+
 # DevOps Info Service
 
 A lightweight web service that exposes information about itself and the system it is running on.
@@ -59,6 +61,15 @@ docker run -p 5000:5000 devops-info-service
 ```bash
 docker pull <dockerhub-username>/devops-info-service
 docker run -p 5000:5000 <dockerhub-username>/devops-info-service
+```
+
+---
+
+## Running tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest --cov=.
 ```
 
 ---
