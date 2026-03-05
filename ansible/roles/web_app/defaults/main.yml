@@ -1,0 +1,24 @@
+---
+# Application name (used for container name and project directory)
+app_name: devops-app
+
+# Docker Hub image (format: username/image-name)
+docker_image: makcal3000/iu-devops-app_python
+
+# Image tag
+docker_tag: latest
+
+# Host port (exposed on the VM)
+app_port: 8000
+
+# Container internal port
+app_internal_port: 8000
+
+# Application directory on the target host
+compose_project_dir: "/opt/{{ app_name }}"
+
+# Wipe Logic Control
+# Set to true to remove application completely before deploying
+# Wipe only:    ansible-playbook deploy.yml -e "web_app_wipe=true" --tags web_app_wipe
+# Clean install: ansible-playbook deploy.yml -e "web_app_wipe=true"
+web_app_wipe: false

@@ -1,0 +1,103 @@
+---
+# Docker installation block with GPG key retry logic
+- name: Docker installation block
+  block:
+    - name: Remove old Docker packages
+      apt:
+        name:
+          - docker
+          - docker-engine
+          - docker.io
+          - containerd
+          - runc
+        state: absent
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_facts['distribution_release'] }} stable"
+        state: present
+        update_cache: yes
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+      notify:
+        - restart docker
+        - restart containerd
+
+    - name: Install Python Docker module
+      apt:
+        name:
+          - python3-docker
+        state: present
+
+  rescue:
+    # Retry after GPG key failure (e.g., network timeout)
+    - name: Wait before retry
+      pause:
+        seconds: 10
+
+    - name: Retry adding Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Retry apt cache update
+      apt:
+        update_cache: yes
+
+    - name: Retry installing Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+  always:
+    - name: Ensure Docker service is enabled and started
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+  become: true
+  tags:
+    - docker_install
+
+# Docker configuration block
+- name: Docker configuration block
+  block:
+    - name: Add user to docker group
+      user:
+        name: "{{ docker_user }}"
+        groups: docker
+        append: yes
+      notify: restart docker
+
+    - name: Test Docker installation
+      command: docker --version
+      register: docker_version_result
+      changed_when: false
+
+    - name: Display Docker version
+      debug:
+        msg: "Docker installed: {{ docker_version_result.stdout }}"
+
+  become: true
+  tags:
+    - docker_config

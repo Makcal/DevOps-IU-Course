@@ -1,0 +1,15 @@
+---
+- name: Deploy application to web servers
+  hosts: webservers
+  become: yes
+  gather_facts: yes
+
+  roles:
+    # web_app role automatically runs docker role via dependency in meta/main.yml
+    - role: web_app
+      tags: [app, deploy, app_deploy, compose]
+
+  post_tasks:
+    - name: Display access URL
+      debug:
+        msg: "Application available at: http://{{ ansible_host }}:{{ app_port }}"
