@@ -1,0 +1,8 @@
+---
+# Rust application deployment variables
+app_name: devops-rust
+docker_image: makcal3000/iu-devops-app_rust
+docker_tag: latest
+app_port: 8001
+app_internal_port: 8080
+compose_project_dir: "/opt/{{ app_name }}"

@@ -1,0 +1,8 @@
+---
+# Python application deployment variables
+app_name: devops-python
+docker_image: makcal3000/iu-devops-app_python
+docker_tag: latest
+app_port: 8000
+app_internal_port: 8000
+compose_project_dir: "/opt/{{ app_name }}"

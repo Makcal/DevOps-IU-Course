@@ -9,5 +9,5 @@
       tags: [always, system]
     - role: docker
       tags: [always, containers]
-    - role: app_deploy
+    - role: web_app
       tags: [app, deploy]
