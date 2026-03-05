@@ -1,5 +1,4 @@
 inventory/
-group_vars/
 
 # Ansible retry files
 *.retry

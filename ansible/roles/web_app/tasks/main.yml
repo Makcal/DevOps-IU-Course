@@ -3,7 +3,7 @@
 - name: Include wipe tasks
   include_tasks: wipe.yml
   tags:
-    - always
+    - web_app_wipe
 
 # Docker Compose application deployment
 - name: Deploy application with Docker Compose

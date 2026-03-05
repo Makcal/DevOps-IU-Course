@@ -44,6 +44,7 @@ jobs:
     permissions:
       contents: read
     if: github.event_name == 'push'
+    environment: AnsibleSSH
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -69,9 +70,11 @@ jobs:
       - name: Deploy with Ansible
         run: |
           cd ansible
-          ansible-playbook playbooks/deploy.yml \
-            --vault-password-file /tmp/vault_pass \
-            --tags "app_deploy"
+          # Создаем временный файл инвентаря
+          echo "[webservers]" > ci_hosts
+          echo "${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }}" >> ci_hosts
+          ansible-playbook -i ci_hosts playbooks/deploy_all.yml \
+            --vault-password-file /tmp/vault_pass
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
 
@@ -83,3 +86,4 @@ jobs:
         run: |
           sleep 10
           curl -f http://${{ secrets.VM_HOST }}:8000/health || exit 1
+          curl -f http://${{ secrets.VM_HOST }}:8001/health || exit 1

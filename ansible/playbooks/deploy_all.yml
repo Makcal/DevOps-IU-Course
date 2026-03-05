@@ -6,23 +6,27 @@
 
   tasks:
     - name: Deploy Python app
-      include_role:
-        name: web_app
-      vars:
-        app_name: devops-python
-        docker_image: makcal3000/iu-devops-app_python
-        docker_tag: latest
-        app_port: 8000
-        app_internal_port: 8000
-        compose_project_dir: "/opt/devops-python"
+      block:
+        - name: Load Python vars
+          include_vars: "../vars/app_python.yml"
+          tags:
+            - always
+          
+        - name: Run web_app role
+          include_role:
+            name: web_app
+          tags:
+            - always
 
     - name: Deploy Rust app
-      include_role:
-        name: web_app
-      vars:
-        app_name: devops-rust
-        docker_image: makcal3000/iu-devops-app_rust
-        docker_tag: latest
-        app_port: 8001
-        app_internal_port: 8080
-        compose_project_dir: "/opt/devops-rust"
+      block:
+        - name: Load Rust vars
+          include_vars: "../vars/app_rust.yml"
+          tags:
+            - always
+          
+        - name: Run web_app role
+          include_role:
+            name: web_app
+          tags:
+            - always

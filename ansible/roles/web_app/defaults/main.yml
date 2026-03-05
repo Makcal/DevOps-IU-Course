@@ -1,13 +1,4 @@
 ---
-# Application identity
-app_name: devops-app
-docker_image: makcal3000/iu-devops-app_python
-docker_tag: latest
-
-# Port mapping
-app_port: 8000          # host port
-app_internal_port: 8000 # container port
-
 # Docker Compose configuration
 docker_compose_version: "3.8"
 compose_project_dir: "/opt/{{ app_name }}"
