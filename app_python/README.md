@@ -1,6 +1,6 @@
 # DevOps Info Service
 
-A lightweight web service that exposes information about itself and the system it is running on.  
+A lightweight web service that exposes information about itself and the system it is running on.
 This service is the foundation for a larger DevOps monitoring and observability tool that will evolve throughout the course.
 
 ---
@@ -15,21 +15,17 @@ The **DevOps Info Service** is a Python-based web application that provides:
 - Incoming request metadata
 - A health check endpoint for monitoring and orchestration tools
 
-The service exposes a simple HTTP API and is designed with production-ready best practices in mind, including configuration via environment variables, structured JSON responses, logging, and error handling.
-
 ---
 
 ## Prerequisites
 
-- **Python:** 3.11 or newer  
-- **pip:** Latest version recommended  
-- **Virtual environment:** `venv` (recommended)
+- **Python:** 3.11 or newer
+- **Docker:** 25+
+- **pip:** Latest version recommended
 
 ---
 
-## Installation
-
-Clone the repository, `cd` to `app_python` and set up a virtual environment:
+## Installation (Local)
 
 ```bash
 python -m venv venv
@@ -39,71 +35,51 @@ pip install -r requirements.txt
 
 ---
 
-## Running the Application
-
-Start the service with default settings:
+## Running the Application (Local)
 
 ```bash
 python app.py
 ```
 
-Run with custom configuration using environment variables:
+---
 
+## Docker Usage
+
+### Build Image Locally
 ```bash
-PORT=8080 python app.py
-HOST=127.0.0.1 PORT=3000 python app.py
-DEBUG=true python app.py
+docker build -t devops-info-service .
 ```
 
-By default, the service listens on `0.0.0.0:5000`.
+### Run Container
+```bash
+docker run -p 5000:5000 devops-info-service
+```
+
+### Pull from Docker Hub
+```bash
+docker pull <dockerhub-username>/devops-info-service
+docker run -p 5000:5000 <dockerhub-username>/devops-info-service
+```
 
 ---
 
 ## API Endpoints
 
-### `GET /` — Service & System Information
-
-Returns detailed information about the service, host system, runtime, request, and available endpoints.
-
-### `GET /health` — Health Check
-
-Simple health endpoint intended for monitoring systems and Kubernetes probes.
-
-**Example response:**
-
-```json
-{
-  "status": "healthy",
-  "timestamp": "2026-01-07T14:30:00.000Z",
-  "uptime_seconds": 3600
-}
-```
-
-Returns HTTP `200` when the service is healthy.
+- `GET /` – Service and system information
+- `GET /health` – Health check endpoint
 
 ---
 
 ## Configuration
 
-The application can be configured using environment variables:
-
 | Variable | Default | Description |
 |--------|---------|-------------|
-| `HOST` | `0.0.0.0` | Interface to bind the server |
-| `PORT` | `5000` | Port to listen on |
-| `DEBUG` | `false` | Enable debug mode |
-
----
-
-## Development Notes
-
-- Follows PEP 8 Python style guidelines
-- Uses structured JSON responses
-- Centralized uptime tracking
-- Designed for future containerization, CI/CD, and monitoring
+| `HOST` | `0.0.0.0` | Interface to bind |
+| `PORT` | `5000` | Listening port |
+| `DEBUG` | `false` | Debug mode |
 
 ---
 
 ## License
 
-This project is intended for educational use as part of the DevOps course.
+Educational use only (DevOps course).
