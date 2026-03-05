@@ -1,0 +1,29 @@
+[package]
+name = "devops-info-service"
+version = "1.0.0"
+description = "DevOps Info Service - Rust implementation"
+authors = ["Maxim Fomin <m.fomin@innopolis.university>"]
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/yourusername/devops-info-service"
+repository = "https://github.com/yourusername/devops-info-service"
+keywords = ["devops", "monitoring", "web-service", "actix-web"]
+categories = ["web-programming", "network-programming"]
+
+[dependencies]
+actix-web = "4.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+sysinfo = "0.30"
+hostname = "0.3"
+dotenv = "0.15"
+
+[dev-dependencies]
+actix-rt = "2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
