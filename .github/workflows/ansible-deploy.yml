@@ -49,7 +49,7 @@ jobs:
           cd ansible
           # Создаем временный файл инвентаря
           echo "[webservers]" > ci_hosts
-          echo "${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }}" >> ci_hosts
+          echo "ansible_host=${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }}" >> ci_hosts
           ansible-playbook -i ci_hosts playbooks/deploy_all.yml \
             --vault-password-file /tmp/vault_pass
         env:
