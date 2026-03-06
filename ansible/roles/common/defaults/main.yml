@@ -1,0 +1,20 @@
+---
+# Common packages to install on all servers
+common_packages:
+  - python3-pip
+  - python3-venv
+  - curl
+  - wget
+  - git
+  - vim
+  - htop
+  - net-tools
+  - unzip
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates
+  - gnupg
+  - lsb-release
+
+# System timezone
+timezone: "UTC"
