@@ -1,8 +1,6 @@
 import os
-import logging
-import time
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 import uvicorn
 
 from src.routes.root import router as root_router
