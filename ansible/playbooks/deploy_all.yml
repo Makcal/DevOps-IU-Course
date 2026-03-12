@@ -1,0 +1,32 @@
+---
+- name: Deploy All Applications
+  hosts: webservers
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: Deploy Python app
+      block:
+        - name: Load Python vars
+          include_vars: "../vars/app_python.yml"
+          tags:
+            - always
+
+        - name: Run web_app role
+          include_role:
+            name: web_app
+          tags:
+            - always
+
+    - name: Deploy Rust app
+      block:
+        - name: Load Rust vars
+          include_vars: "../vars/app_rust.yml"
+          tags:
+            - always
+
+        - name: Run web_app role
+          include_role:
+            name: web_app
+          tags:
+            - always
