@@ -14,34 +14,32 @@ debug = os.getenv("DEBUG", "False").lower() == "true"
 
 app = FastAPI(debug=debug)
 
-logger = logging.getLogger("app")
-logger.setLevel(logging.INFO)
-
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    start = time.time()
-
-    response = await call_next(request)
-
-    duration = time.time() - start
-
-    logger.info(
-        "request",
-        extra={
-            "method": request.method,
-            "path": request.url.path,
-            "status_code": response.status_code,
-            "client_ip": request.client.host,
-            "duration": duration
-        }
-    )
-
-    return response
-
-
 app.include_router(root_router)
 app.include_router(health_router)
 
 
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s"
+        }
+    },
+    "handlers": {
+        "default": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+            "level": "INFO"
+        }
+    },
+    "root": {
+        "handlers": ["default"],
+        "level": "INFO"
+    }
+}
+
+
 if __name__ == "__main__":
-    uvicorn.run(app, host=host, port=port)
+    uvicorn.run(app, host=host, port=port, log_config=LOGGING_CONFIG)
