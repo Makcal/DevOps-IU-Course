@@ -44,16 +44,58 @@ requests → gauge - Status distribution → sum by(status)
 -   Persistent volumes used
 -   Retention configured
 
-## 7. Testing
+## 7. Testing and evidences
+
+[prometheus.yml](../prometheus/prometheus.yml)
+```yml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Storage settings (Prometheus 3.x style)
+storage:
+  tsdb:
+    retention:
+      time: 15d
+      size: 10GB
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Your Python app (metrics endpoint)
+  - job_name: 'app'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['app-python:5000']
+
+  # Loki metrics
+  - job_name: 'loki'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['loki:3100']
+
+  # Grafana metrics
+  - job_name: 'grafana'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['grafana:3000']
+```
+
+[Grafana Dashboard JSON](../grafana_prometheus.json)
 
 -   curl /metrics works
--   Prometheus targets UP
+-   Prometheus targets UP and query example
 -   Grafana dashboards show live data
 
 ![logs](./metrics_logs.png)
+![targets](./prometheus_targets.png)
+![query](./prometheus_query.png)
+![grafana](./grafana_login.png)
+![Serices alive](./dc_ps.png)
 
 ## 8. Challenges
 
--   Metrics not appearing → fixed endpoint path
--   Wrong labels → normalized endpoints
--   Prometheus DOWN → fixed network/service name
+- Grafana dashboard customization

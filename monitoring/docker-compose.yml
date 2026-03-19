@@ -102,7 +102,8 @@ services:
           memory: 1G
 
   app-python:
-    image: makcal3000/iu-devops-app_python:latest
+    build:
+      context: ../app_python
     ports:
       - "8000:5000"
     labels:
@@ -110,14 +111,30 @@ services:
       app: "devops-python"
     networks:
       - metrics
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request as r; assert r.urlopen(\"http://localhost:5000/health\").status == 200' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
 
   app-rust:
-    image: makcal3000/iu-devops-app_rust:latest
+    build:
+      context: ../app_rust
     ports:
       - "8001:8080"
     labels:
       logging: "promtail"
       app: "devops-rust"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
 
 networks:
   logging:
