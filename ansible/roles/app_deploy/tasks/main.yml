@@ -1,0 +1,85 @@
+---
+- name: Log in to Docker Hub
+  docker_login:
+    username: "{{ dockerhub_username }}"
+    password: "{{ dockerhub_password }}"
+  become: yes
+
+- name: Create Docker network if needed
+  docker_network:
+    name: "{{ app_network | default('bridge') }}"
+    state: present
+  become: yes
+
+- name: Pull Docker image
+  docker_image:
+    name: "{{ dockerhub_username }}/{{ app_name }}:{{ app_image_tag }}"
+    source: pull
+    force_source: yes
+  become: yes
+  register: pull_result
+
+- name: Stop existing container
+  docker_container:
+    name: "{{ app_container_name }}"
+    state: absent
+  become: yes
+  when: pull_result.changed
+
+- name: Run application container
+  docker_container:
+    name: "{{ app_container_name }}"
+    image: "{{ dockerhub_username }}/{{ app_name }}:{{ app_image_tag }}"
+    state: started
+    restart_policy: "{{ app_restart_policy }}"
+    ports:
+      - "{{ app_host_port }}:{{ app_port }}"
+    env: "{{ app_env | default({}) }}"
+    networks:
+      - name: "{{ app_network | default('bridge') }}"
+    pull: no  # Already pulled above
+    recreate: "{{ app_recreate }}"
+  become: yes
+  register: container_result
+
+- name: Wait for application to be ready
+  wait_for:
+    port: "{{ app_host_port }}"
+    host: "{{ ansible_host }}"
+    delay: "{{ health_check_delay }}"
+    timeout: "{{ health_check_timeout }}"
+  become: no
+  delegate_to: localhost
+
+- name: Test health endpoint
+  uri:
+    url: "http://{{ ansible_host }}:{{ app_host_port }}{{ health_check_endpoint }}"
+    method: GET
+    status_code: 200
+  register: health_result
+  until: health_result.status == 200
+  retries: 5
+  delay: 2
+  become: no
+  delegate_to: localhost
+
+- name: Display application status
+  debug:
+    msg:
+      - "Application: {{ app_name }}"
+      - "Container: {{ app_container_name }}"
+      - "Image: {{ dockerhub_username }}/{{ app_name }}:{{ app_image_tag }}"
+      - "Port: {{ app_host_port }} -> {{ app_port }}"
+      - "Status: {{ container_result.container.State.Status }}"
+      - "Health: {{ health_result.status }} - {{ health_result.msg }}"
+
+- name: Get container logs
+  command: "docker logs --tail 20 {{ app_container_name }}"
+  register: container_logs
+  become: yes
+  changed_when: false
+
+- name: Display recent logs
+  debug:
+    msg: "{{ container_logs.stdout_lines }}"
+  when: container_logs.stdout_lines | length > 0

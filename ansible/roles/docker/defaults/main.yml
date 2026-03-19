@@ -1,0 +1,9 @@
+---
+# Docker version to install
+docker_version: "5:24.0.7-1~ubuntu.22.04~jammy"
+
+# User to add to docker group
+docker_user: "ubuntu"
+
+# Docker daemon options
+docker_options: ""
