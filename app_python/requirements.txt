@@ -16,6 +16,7 @@ mando==0.7.1
 mccabe==0.7.0
 packaging==26.0
 pluggy==1.6.0
+prometheus_client==0.23.1
 pycodestyle==2.14.0
 pydantic==2.12.5
 pydantic_core==2.41.5
