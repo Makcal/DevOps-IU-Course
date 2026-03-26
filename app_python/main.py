@@ -20,7 +20,6 @@ app.include_router(metrics_router)
 
 app.add_middleware(MetricsMiddleware)
 
-
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
