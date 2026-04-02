@@ -42,7 +42,7 @@ Helm simplifies Kubernetes deployments by:
 ### Chart Structure
 
 ```
-k8s/myapp/
+k8s/mychart/
 ├── Chart.yaml
 ├── values.yaml
 ├── values-dev.yaml
@@ -60,11 +60,10 @@ k8s/myapp/
 
 ```yaml
 apiVersion: v2
-name: myapp
-description: Python FastAPI application Helm chart
+name: my-python-app
 type: application
 version: 0.1.0
-appVersion: "1.0"
+appVersion: "0.1.0"
 ```
 
 ### Deployment Template Highlights
@@ -104,8 +103,8 @@ service:
 
 resources:
   limits:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 200m
+    memory: 256Mi
 ```
 
 ### values-prod.yaml
@@ -127,13 +126,13 @@ resources:
 Development:
 
 ```bash
-helm install myapp-dev k8s/myapp -f k8s/myapp/values-dev.yaml
+helm install myrelease-dev k8s/mychart -f k8s/mychart/values-dev.yaml
 ```
 
 Production:
 
 ```bash
-helm upgrade myapp-dev k8s/myapp -f k8s/myapp/values-prod.yaml
+helm upgrade myrelease-dev k8s/mychart -f k8s/mychart/values-prod.yaml
 ```
 
 ---
@@ -146,8 +145,7 @@ Two lifecycle hooks were implemented.
 
 Purpose:
 
-- Validate environment readiness
-- Simulate migration or dependency check
+- Console notification
 
 ```yaml
 annotations:
@@ -159,7 +157,7 @@ annotations:
 Execution command:
 
 ```bash
-kubectl logs job/myapp-pre-install
+kubectl logs job/myrelease-pre-install
 ```
 
 ---
@@ -168,8 +166,7 @@ kubectl logs job/myapp-pre-install
 
 Purpose:
 
-- Run smoke test
-- Verify application availability
+- Console notification
 
 ```yaml
 annotations:
@@ -182,7 +179,7 @@ Verification:
 
 ```bash
 kubectl get jobs
-kubectl logs job/myapp-post-install
+kubectl logs job/myrelease-post-install
 ```
 
 Hooks were automatically deleted after successful execution.
@@ -194,45 +191,50 @@ Hooks were automatically deleted after successful execution.
 ### Helm Lint
 
 ```bash
-helm lint k8s/myapp
+$ helm lint k8s/mychart
+NAME	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART              	APP VERSION
+r   	default  	1       	2026-04-03 00:16:57.333950893 +0300 MSK	deployed	my-python-app-0.1.0	0.1.0
 ```
-
-Chart passed validation without errors.
-
----
-
-### Template Rendering
-
-```bash
-helm template myapp k8s/myapp
-```
-
-Templates rendered successfully.
-
----
-
-### Dry Run
-
-```bash
-helm install --dry-run --debug myapp k8s/myapp
-```
-
-All Kubernetes resources were generated correctly.
 
 ---
 
 ### Deployment Verification
 
 ```bash
-helm list
-kubectl get all
+$ kubectl get all
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/r-my-python-app-9bf7f4bfc-4s496   1/1     Running   0          9m40s
+pod/r-my-python-app-9bf7f4bfc-7crb8   1/1     Running   0          9m40s
+pod/r-my-python-app-9bf7f4bfc-p2gvj   1/1     Running   0          9m40s
+
+NAME                              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes                ClusterIP   10.96.0.1       <none>        443/TCP        47m
+service/r-my-python-app-service   NodePort    10.99.180.214   <none>        80:30080/TCP   9m40s
+
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/r-my-python-app   3/3     3            3           9m40s
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/r-my-python-app-9bf7f4bfc   3         3         3       9m40s
 ```
 
-Example output:
+---
+
+### Hooks output
 
 ```
-NAME        READY   STATUS    RESTARTS
-myapp-xxx   1/1     Running   0
+$ kubectl get jobs
+NAME                                   STATUS     COMPLETIONS   DURATION   AGE
+myrelease-my-python-app-post-install   Complete   1/1           7s         63s
+myrelease-my-python-app-pre-install    Complete   1/1           6s         69s
+
+$ kubectl logs jobs/myrelease-my-python-app-pre-install
+Pre-install task running
+Pre-install completed
+
+$ kubectl logs jobs/myrelease-my-python-app-post-install
+Post-install validation
+Validation passed
 ```
 
 ---
@@ -242,25 +244,25 @@ myapp-xxx   1/1     Running   0
 ### Install
 
 ```bash
-helm install myapp k8s/myapp
+helm install myrelease k8s/mychart
 ```
 
 ### Upgrade
 
 ```bash
-helm upgrade myapp k8s/myapp -f values-prod.yaml
+helm upgrade myrelease k8s/mychart -f values-prod.yaml
 ```
 
 ### Rollback
 
 ```bash
-helm rollback myapp 1
+helm rollback myrelease 1
 ```
 
 ### Uninstall
 
 ```bash
-helm uninstall myapp
+helm uninstall myrelease
 ```
 
 ---
@@ -270,7 +272,16 @@ helm uninstall myapp
 Validation steps performed:
 
 - Helm lint passed
+```
+==> Linting mychart
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+```
 - Template rendering verified
+```bash
+$ helm template test-release mychart | less
+```
 - Dry-run executed successfully
 - Application accessible via Kubernetes service
 - Hook jobs executed correctly
