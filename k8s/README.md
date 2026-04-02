@@ -260,7 +260,7 @@ Events:
 
 ## Application Access Test
 
-![curl](./curl.png)
+![curl](./docs/curl.png)
 
 ---
 
@@ -306,7 +306,7 @@ kubectl rollout status deployment/app-python
 
 Result:
 
-![rollout](./rollout.png)
+![rollout](./docs/rollout.png)
 
 ---
 
