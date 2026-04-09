@@ -24,6 +24,10 @@ spec:
     metadata:
       labels:
         app: {{ .Chart.Name }}
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "myapp"
+        vault.hashicorp.com/agent-inject-secret-config: "secret/data/myapp/config"
 
     spec:
       containers:
@@ -32,6 +36,9 @@ spec:
           ports:
             - name: app-http
               containerPort: {{ .Values.service.containerPort }}
+          envFrom:
+            - secretRef:
+                name: {{ include "mychart.fullname" . }}-secret
 
           resources: 
             {{- toYaml .Values.resources | nindent 12 }}

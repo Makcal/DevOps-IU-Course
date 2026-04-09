@@ -34,3 +34,7 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 3
   failureThreshold: 3
+
+secrets:
+  username: admin
+  password: changeme
