@@ -1,0 +1,40 @@
+replicaCount: 3
+
+image:
+  repository: makcal3000/iu-devops-app_python
+  tag: new
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  containerPort: 5000
+  nodePort: 30080
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 5000
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 5000
+  initialDelaySeconds: 5
+  periodSeconds: 3
+  failureThreshold: 3
+
+secrets:
+  username: admin
+  password: changeme

@@ -1,0 +1,22 @@
+---
+- name: Provision web servers with system packages and Docker
+  hosts: webservers
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - role: common
+      tags: [common, system]
+    - role: docker
+      tags: [docker, containers]
+
+  post_tasks:
+    - name: Display system information after provisioning
+      debug:
+        msg:
+          - "Hostname: {{ ansible_facts['hostname'] }}"
+          - "OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+          - "Kernel: {{ ansible_facts['kernel'] }}"
+          - "Memory: {{ ansible_facts['memtotal_mb'] }} MB"
+          - "CPU Cores: {{ ansible_facts['processor_cores'] }}"
+          - "IP Address: {{ ansible_facts['default_ipv4'].address }}"
