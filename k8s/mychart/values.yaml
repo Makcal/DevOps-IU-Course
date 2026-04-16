@@ -2,7 +2,7 @@ replicaCount: 3
 
 image:
   repository: makcal3000/iu-devops-app_python
-  tag: new
+  tag: 0.2.0
   pullPolicy: IfNotPresent
 
 service:
@@ -38,3 +38,20 @@ readinessProbe:
 secrets:
   username: admin
   password: changeme
+
+environment: "development"
+logLevel: "info"
+debugMode: true
+
+# ConfigMap settings
+configMap:
+  enabled: true
+  mountPath: /config
+
+# Persistence settings
+persistence:
+  enabled: true
+  size: 1Ki
+  storageClass: ""  # Use default storage class
+  mountPath: /data
+  accessMode: ReadWriteOnce

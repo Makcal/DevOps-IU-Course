@@ -28,6 +28,8 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "myapp"
         vault.hashicorp.com/agent-inject-secret-config: "secret/data/myapp/config"
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
 
     spec:
       containers:
@@ -39,6 +41,19 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "mychart.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "mychart.fullname" . }}-env
+          volumeMounts:
+            {{- if .Values.configMap.enabled }}
+            - name: config-volume
+              mountPath: {{ .Values.configMap.mountPath }}
+              readOnly: true
+            {{- end }}
+
+            {{- if .Values.persistence.enabled }}
+            - name: data-volume
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- end }}
 
           resources: 
             {{- toYaml .Values.resources | nindent 12 }}
@@ -47,3 +62,16 @@ spec:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
+
+      volumes:
+        {{- if .Values.configMap.enabled }}
+        - name: config-volume
+          configMap:
+            name: {{ include "mychart.fullname" . }}-config
+        {{- end }}
+
+        {{- if .Values.persistence.enabled }}
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: {{ include "mychart.fullname" . }}-data
+        {{- end }}

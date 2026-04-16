@@ -7,6 +7,7 @@ from src.metrics import MetricsMiddleware
 from src.routes.root import router as root_router
 from src.routes.health import router as health_router
 from src.routes.metrics import router as metrics_router
+from src.routes.visits import router as visits_router
 
 host = os.getenv("HOST", "0.0.0.0")
 port = int(os.getenv("PORT", 5000))
@@ -17,6 +18,7 @@ app = FastAPI(debug=debug)
 app.include_router(root_router)
 app.include_router(health_router)
 app.include_router(metrics_router)
+app.include_router(visits_router)
 
 app.add_middleware(MetricsMiddleware)
 
