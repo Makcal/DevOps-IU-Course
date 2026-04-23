@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: my-python-app-appset
+  name: my-python-app-app-set
   namespace: argocd
 spec:
   generators:

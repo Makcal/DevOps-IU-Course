@@ -68,13 +68,13 @@ admin  true     login
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: visitcounter-app
+  name: my-python-app
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/username/k8s-workshop.git
-    targetRevision: main
+    repoURL: https://github.com/Makcal/DevOps-IU-Course.git
+    targetRevision: lab13
     path: k8s/mychart
     helm:
       valueFiles:
@@ -91,17 +91,17 @@ spec:
 
 ```bash
 kubectl apply -f k8s/argocd/application.yaml
-argocd app sync visitcounter-app
+argocd app sync my-python-app
 ```
 
 **Verification:**
 ```
-$ argocd app get visitcounter-app
-Name:               visitcounter-app
+$ argocd app get my-python-app
+Name:               my-python-app
 Namespace:          argocd
 Server:             https://kubernetes.default.svc
 Project:            default
-Source:             https://github.com/username/k8s-workshop.git@main:k8s/mychart
+Source:             https://github.com/Makcal/DevOps-IU-Course.git@main:k8s/mychart
 Destination:        default (namespace)
 Sync Status:        Synced
 Health Status:      Healthy
@@ -119,13 +119,13 @@ git push origin main
 
 **ArgoCD detects drift:**
 ```
-$ argocd app get visitcounter-app
-Name:               visitcounter-app
+$ argocd app get my-python-app
+Name:               my-python-app
 Sync Status:        OutOfSync (1 difference)
 Health Status:      Healthy
 
-$ argocd app sync visitcounter-app
-Application 'visitcounter-app' synced successfully
+$ argocd app sync my-python-app
+Application 'my-python-app' synced successfully
 ```
 
 ---
@@ -145,13 +145,13 @@ kubectl create namespace prod
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: visitcounter-dev
+  name: my-python-app-dev
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/username/k8s-workshop.git
-    targetRevision: main
+    repoURL: https://github.com/Makcal/DevOps-IU-Course.git
+    targetRevision: lab13
     path: k8s/mychart
     helm:
       valueFiles:
@@ -173,13 +173,13 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: visitcounter-prod
+  name: my-python-app-prod
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/username/k8s-workshop.git
-    targetRevision: main
+    repoURL: https://github.com/Makcal/DevOps-IU-Course.git
+    targetRevision: lab13
     path: k8s/mychart
     helm:
       valueFiles:
@@ -233,25 +233,25 @@ persistence:
 ```bash
 kubectl apply -f k8s/argocd/application-dev.yaml
 kubectl apply -f k8s/argocd/application-prod.yaml
-argocd app sync visitcounter-prod
+argocd app sync my-python-app-prod
 ```
 
 **Verification:**
 ```
 $ argocd app list
 NAME                CLUSTER                         NAMESPACE  PROJECT  STATUS     HEALTH
-visitcounter-dev    https://kubernetes.default.svc  dev        default  Synced     Healthy
-visitcounter-prod   https://kubernetes.default.svc  prod       default  Synced     Healthy
+my-python-app-dev    https://kubernetes.default.svc  dev        default  Synced     Healthy
+my-python-app-prod   https://kubernetes.default.svc  prod       default  Synced     Healthy
 
 $ kubectl get pods -n dev
 NAME                                 READY   STATUS    RESTARTS   AGE
-visitcounter-dev-7b9f8c6d4f-abcde    1/1     Running   0          5m
+my-python-app-dev-7b9f8c6d4f-abcde    1/1     Running   0          5m
 
 $ kubectl get pods -n prod
 NAME                                  READY   STATUS    RESTARTS   AGE
-visitcounter-prod-9d8f7c6e5f-xyz01    1/1     Running   0          5m
-visitcounter-prod-9d8f7c6e5f-xyz02    1/1     Running   0          5m
-visitcounter-prod-9d8f7c6e5f-xyz03    1/1     Running   0          5m
+my-python-app-prod-9d8f7c6e5f-xyz01    1/1     Running   0          5m
+my-python-app-prod-9d8f7c6e5f-xyz02    1/1     Running   0          5m
+my-python-app-prod-9d8f7c6e5f-xyz03    1/1     Running   0          5m
 ```
 
 ### Why Manual Sync for Production?
@@ -271,7 +271,7 @@ visitcounter-prod-9d8f7c6e5f-xyz03    1/1     Running   0          5m
 ### Test 1: Manual Scale (Self-Healing)
 
 ```bash
-kubectl scale deployment visitcounter-dev -n dev --replicas=5
+kubectl scale deployment my-python-app-dev -n dev --replicas=5
 ```
 
 **Before:**
@@ -282,10 +282,10 @@ $ kubectl get pods -n dev | wc -l
 
 **ArgoCD detects drift:**
 ```
-$ argocd app get visitcounter-dev
+$ argocd app get my-python-app-dev
 Sync Status:        OutOfSync (1 difference)
 
-$ argocd app diff visitcounter-dev
+$ argocd app diff my-python-app-dev
 spec:
   replicas: 1
 + replicas: 5
@@ -306,15 +306,15 @@ $ kubectl get pods -n dev | wc -l
 ### Test 2: Pod Deletion
 
 ```bash
-kubectl delete pod visitcounter-dev-7b9f8c6d4f-abcde -n dev
+kubectl delete pod my-python-app-dev-7b9f8c6d4f-abcde -n dev
 ```
 
 **Kubernetes immediately recreates it:**
 ```
 $ kubectl get pods -n dev -w
 NAME                                 READY   STATUS    RESTARTS   AGE
-visitcounter-dev-7b9f8c6d4f-newpod   0/1     Pending   0          0s
-visitcounter-dev-7b9f8c6d4f-newpod   1/1     Running   0          3s
+my-python-app-dev-7b9f8c6d4f-newpod   0/1     Pending   0          0s
+my-python-app-dev-7b9f8c6d4f-newpod   1/1     Running   0          3s
 ```
 
 **Key distinction:**
@@ -324,21 +324,21 @@ visitcounter-dev-7b9f8c6d4f-newpod   1/1     Running   0          3s
 ### Test 3: Configuration Drift
 
 ```bash
-kubectl label deployment visitcounter-dev -n dev manual-label=test
+kubectl label deployment my-python-app-dev -n dev manual-label=test
 ```
 
 **View drift:**
 ```
-$ argocd app diff visitcounter-dev
+$ argocd app diff my-python-app-dev
 metadata:
   labels:
-    app.kubernetes.io/instance: visitcounter-dev
+    app.kubernetes.io/instance: my-python-app-dev
 +   manual-label: test
 ```
 
 **Self-heal reverts the change:**
 ```
-$ kubectl describe deployment visitcounter-dev -n dev | grep manual-label
+$ kubectl describe deployment my-python-app-dev -n dev | grep manual-label
 # Label is no longer present
 ```
 
@@ -366,7 +366,7 @@ $ kubectl describe deployment visitcounter-dev -n dev | grep manual-label
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: visitcounter-appset
+  name: my-python-app-set
   namespace: argocd
 spec:
   generators:
@@ -386,15 +386,15 @@ spec:
             selfHeal: false
   template:
     metadata:
-      name: 'visitcounter-{{env}}'
+      name: 'my-python-app-{{env}}'
       labels:
-        app: visitcounter
+        app: my-python-app
         environment: '{{env}}'
     spec:
       project: default
       source:
-        repoURL: https://github.com/username/k8s-workshop.git
-        targetRevision: main
+        repoURL: https://github.com/Makcal/DevOps-IU-Course.git
+        targetRevision: lab13
         path: k8s/mychart
         helm:
           valueFiles:
@@ -425,8 +425,8 @@ kubectl apply -f k8s/argocd/applicationset.yaml
 ```
 $ argocd app list
 NAME                CLUSTER                         NAMESPACE  PROJECT  STATUS     HEALTH
-visitcounter-dev    https://kubernetes.default.svc  dev        default  Synced     Healthy
-visitcounter-prod   https://kubernetes.default.svc  prod       default  Synced     Healthy
+my-python-app-dev    https://kubernetes.default.svc  dev        default  Synced     Healthy
+my-python-app-prod   https://kubernetes.default.svc  prod       default  Synced     Healthy
 ```
 
 ### Benefits of ApplicationSet
@@ -457,22 +457,22 @@ visitcounter-prod   https://kubernetes.default.svc  prod       default  Synced  
 │ ArgoCD › Applications                                                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│  ○ visitcounter-dev    dev     Synced    Healthy    Auto    ▼               │
-│  ○ visitcounter-prod   prod    Synced    Healthy    Manual  ▼               │
+│  ○ my-python-app-dev    dev     Synced    Healthy    Auto    ▼               │
+│  ○ my-python-app-prod   prod    Synced    Healthy    Manual  ▼               │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Application Details (visitcounter-dev)
+### Application Details (my-python-app-dev)
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ visitcounter-dev                                    Synced │ Healthy        │
+│ my-python-app-dev                                    Synced │ Healthy        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  KUBERNETES RESOURCES                                                        │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │ Deployment/visitcounter-dev    dev        Synced    Healthy         │    │
-│  │ Service/visitcounter-dev       dev        Synced    Healthy         │    │
+│  │ Deployment/my-python-app-dev    dev        Synced    Healthy         │    │
+│  │ Service/my-python-app-dev       dev        Synced    Healthy         │    │
 │  │ PersistentVolumeClaim/...      dev        Synced    Healthy         │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
@@ -493,7 +493,7 @@ visitcounter-prod   https://kubernetes.default.svc  prod       default  Synced  
 |-----------|--------|
 | ArgoCD Installation | ✅ Running in argocd namespace |
 | UI/CLI Access | ✅ Port-forward & CLI configured |
-| Application Deployment | ✅ VisitCounter app synced |
+| Application Deployment | ✅ my-python-app app synced |
 | GitOps Workflow | ✅ Change detection working |
 | Multi-Environment | ✅ Dev (auto-sync) + Prod (manual) |
 | Self-Healing Tests | ✅ Scale, pod deletion, config drift |
