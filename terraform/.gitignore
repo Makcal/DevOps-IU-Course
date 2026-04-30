@@ -1,0 +1,16 @@
+# Terraform
+/providers/
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+terraform-key.json
+secrets.sh
+*.tfvars
+.terraform.lock.hcl
+
+# Cloud credentials
+*.pem
+*.key
+*.json  # Service account keys
+credentials
