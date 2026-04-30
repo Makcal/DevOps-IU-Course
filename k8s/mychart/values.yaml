@@ -2,7 +2,7 @@ replicaCount: 3
 
 image:
   repository: makcal3000/iu-devops-app_python
-  tag: 0.2.0
+  tag: new
   pullPolicy: IfNotPresent
 
 service:
