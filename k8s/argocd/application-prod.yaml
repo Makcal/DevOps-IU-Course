@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+
+kind: Application
+metadata:
+  name: my-python-app-prod
+  namespace: argocd
+  labels:
+    app: my-python-app
+    environment: prod
+
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Makcal/DevOps-IU-Course.git
+    targetRevision: lab13
+    path: k8s/mychart
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

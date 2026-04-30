@@ -17,6 +17,13 @@ router = APIRouter()
 
 @router.get("/")
 async def root(request: Request) -> dict[str, Any]:
+    with open('/data/visits', 'a+') as read:
+        read.seek(0)
+        n = int(read.read() or '0')
+    n += 1
+    with open('/data/visits', 'w') as write:
+        write.write(str(n))
+
     return {
         "service": get_service_info(),
         "system": get_system_info(),

@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "mychart.fullname" . }}-analysis
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: 8080
+  strategy:
+    canary:
+      steps:
+      - setWeight: 10
+      - pause: {}  # Manual promotion after initial exposure
+      
+      - setWeight: 25
+      - analysis:
+          templates:
+            - templateName: {{ include "mychart.fullname" . }}-health-check
+          args:
+            - name: service-name
+              value: {{ include "mychart.fullname" . }}
+          startingStep: 2  # Run analysis after step 2
+      
+      - setWeight: 50
+      - pause: { duration: 60s }
+      
+      - setWeight: 75
+      - analysis:
+          templates:
+            - templateName: {{ include "mychart.fullname" . }}-health-check
+      
+      - setWeight: 100

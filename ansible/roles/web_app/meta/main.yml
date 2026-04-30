@@ -1,0 +1,5 @@
+---
+# Role metadata and dependencies
+# The docker role is a prerequisite: Docker must be installed before deploying the app.
+dependencies:
+  - role: docker
