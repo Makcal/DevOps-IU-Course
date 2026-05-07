@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+
+kind: StatefulSet
+metadata:
+  name: {{ include "mychart.fullname" . }}
+  labels:
+    {{- include "mychart.labels" . | nindent 4 }}
+
+spec:
+  serviceName: {{ include "mychart.fullname" . }}-headless
+
+  replicas: {{ .Values.statefulset.replicas | default 3 }}
+  selector:
+    matchLabels:
+      {{- include "mychart.selectorLabels" . | nindent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "mychart.selectorLabels" . | nindent 8 }}
+
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.containerPort }}
+          name: http
+        envFrom:
+        - configMapRef:
+            name: {{ include "mychart.fullname" . }}-env
+            optional: true
+        - secretRef:
+            name: {{ include "mychart.fullname" . }}-secret
+            optional: true
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: DATA_DIR
+          value: {{ .Values.statefulset.dataDir | default "/data" }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+          readOnly: true
+        - name: data
+          mountPath: {{ .Values.statefulset.dataDir | default "/data" }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ include "mychart.fullname" . }}-config
+
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      {{- if .Values.statefulset.storageClass }}
+      storageClassName: {{ .Values.statefulset.storageClass }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.statefulset.storageSize | default "1Gi" }}
