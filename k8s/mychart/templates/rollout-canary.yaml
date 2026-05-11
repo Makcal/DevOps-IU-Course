@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+
+kind: Rollout
+metadata:
+  name: {{ include "mychart.fullname" . }}
+  labels:
+    {{- include "mychart.labels" . | nindent 4 }}
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: app-http
+            containerPort: {{ .Values.service.containerPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "mychart.fullname" . }}-env
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+        - name: config-volume
+          mountPath: /config
+          readOnly: true
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: {{ include "mychart.fullname" . }}-data
+      - name: config-volume
+        configMap:
+          name: {{ include "mychart.fullname" . }}-config
+
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause: {}  # Manual promotion required
+      - setWeight: 40
+      - pause: { duration: 30s }
+      - setWeight: 60
+      - pause: { duration: 30s }
+      - setWeight: 80
+      - pause: { duration: 30s }
+      - setWeight: 100
