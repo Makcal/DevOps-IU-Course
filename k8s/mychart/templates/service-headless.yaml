@@ -4,12 +4,15 @@ kind: Service
 metadata:
   name: {{ include "mychart.fullname" . }}-headless
   labels:
+    app: {{ .Chart.Name }}
     {{- include "mychart.labels" . | nindent 4 }}
 
 spec:
   clusterIP: None
+
   selector:
     {{- include "mychart.selectorLabels" . | nindent 4 }}
+
   ports:
     - name: http
       port: {{ .Values.service.port }}
