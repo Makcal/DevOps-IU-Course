@@ -3,7 +3,7 @@ FROM python:3.13-slim AS builder
 WORKDIR /build
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt --user --no-cache-dir
+RUN ["pip", "install", "-r", "requirements.txt", "--user", "--no-cache-dir"]
 
 # =========================
 FROM python:3.13-slim AS main
@@ -15,4 +15,4 @@ COPY --from=builder /root/.local /home/userapp/.local
 
 COPY . .
 EXPOSE 5000
-CMD python app.py
+CMD ["python", "main.py"]

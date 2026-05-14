@@ -1,0 +1,13 @@
+---
+- name: Complete server setup and deployment
+  hosts: webservers
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - role: common
+      tags: [always, system]
+    - role: docker
+      tags: [always, containers]
+    - role: web_app
+      tags: [app, deploy]
