@@ -1,0 +1,12 @@
+---
+# Default application settings
+app_port: 5000
+app_host_port: 5000
+app_restart_policy: unless-stopped
+app_network: bridge
+app_recreate: yes
+
+# Health check settings
+health_check_endpoint: "/health"
+health_check_timeout: 30
+health_check_delay: 5
