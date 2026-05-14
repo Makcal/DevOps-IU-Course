@@ -1,0 +1,17 @@
+# Override values for StatefulSet deployment
+statefulset:
+  enabled: true
+  replicas: 3
+  storageSize: 500Mi
+
+# Reduce resource requests for testing
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+environment: "stateful-test"
+logLevel: "debug"

@@ -1,0 +1,15 @@
+apiVersion: v2              # Chart API version (v2 for Helm 3+)
+
+name: my-python-app         # Chart name
+description: My Python application Helm chart
+type: application           # application or library
+version: 0.1.0              # Chart version (SemVer)
+appVersion: "0.1.0"         # App version (can be any string)
+keywords:
+  - python
+  - web
+maintainers:
+  - name: Maxim Fomin
+    email: m.fomin@innopolis.university
+sources:
+  - https://github.com/Makcal/DevOps-IU-Course
