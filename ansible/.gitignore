@@ -1,0 +1,28 @@
+inventory/
+
+# Ansible retry files
+*.retry
+
+# Vault password file
+.vault_pass
+.vault_password
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Inventory files with IPs (optional - keep if you want to commit template)
+# inventory/hosts.ini
+
+# Local development files
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+
+# SSH keys (if any)
+*.pem
+*.key
+id_rsa
+id_rsa.pub
