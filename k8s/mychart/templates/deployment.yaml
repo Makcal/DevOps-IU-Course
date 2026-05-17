@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}
+  labels:
+    app: {{ .Chart.Name }}
+    {{- include "mychart.labels" . | nindent 4 }}
+
+spec:
+  replicas: {{ .Values.replicaCount | default 3 }}
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "myapp"
+        vault.hashicorp.com/agent-inject-secret-config: "secret/data/myapp/config"
+
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - name: app-http
+              containerPort: {{ .Values.service.containerPort }}
+          envFrom:
+            - secretRef:
+                name: {{ include "mychart.fullname" . }}-secret
+
+          resources: 
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
