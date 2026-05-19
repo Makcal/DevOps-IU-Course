@@ -1,0 +1,34 @@
+---
+- name: Deploy application to web servers
+  hosts: webservers
+  become: yes
+  gather_facts: yes
+  
+  vars_files:
+    - ../group_vars/all.yml
+
+  pre_tasks:
+    - name: Ensure target directory exists
+      file:
+        path: /opt/app
+        state: directory
+        mode: '0755'
+      become: yes
+
+  roles:
+    - role: app_deploy
+      tags: [app, deploy]
+
+  post_tasks:
+    - name: Verify application is accessible
+      uri:
+        url: "http://{{ ansible_host }}:{{ app_host_port }}/"
+        method: GET
+        status_code: 200
+      register: main_endpoint
+      become: no
+      delegate_to: localhost
+
+    - name: Display access URL
+      debug:
+        msg: "Application available at: http://{{ ansible_host }}:{{ app_host_port }}"
